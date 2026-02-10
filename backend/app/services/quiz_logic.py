@@ -1,70 +1,54 @@
+import google.generativeai as genai
 import os
-import json
-from openai import OpenAI
 
-# Initialize OpenAI client (API key must be in env variable)
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# ---------- CONFIG ----------
+# Put your Gemini API key in an environment variable
+# Windows (PowerShell):
+# setx GEMINI_API_KEY "your_api_key_here"
+
+API_KEY = "AIzaSyBuHxd2n5ZSl5LIhxqIsV4CXP2adK3y1V0"
+
+genai.configure(api_key=API_KEY)
+
+model = genai.GenerativeModel("gemini-3-flash-preview")
 
 
-def generate_questions_by_level(level: str):
+# ---------- QUIZ LOGIC ----------
+def generate_question(topic: str, difficulty: str = "easy") -> dict:
     prompt = f"""
-Generate EXACTLY 5 multiple-choice questions for Python at {level.upper()} level.
+    Create ONE {difficulty} level quiz question on the topic "{topic}".
+    Return strictly in this format:
 
-Rules:
-- Each question must have 4 options
-- Only ONE correct answer
-- correct_answer must be an index (0-3)
-- Return ONLY valid JSON
-- No explanation, no markdown
+    Question: ...
+    Option A: ...
+    Option B: ...
+    Option C: ...
+    Option D: ...
+    Correct Answer: A/B/C/D
+    """
 
-Format:
-[
-  {{
-    "question": "",
-    "options": ["", "", "", ""],
-    "correct_answer": 0,
-    "level": "{level}"
-  }}
-]
-"""
+    response = model.generate_content(prompt)
+    text = response.text.strip()
 
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.7
-    )
+    lines = text.split("\n")
+    data = {}
 
-    return json.loads(response.choices[0].message.content)
-
-
-def generate_questions():
-    return {
-        "beginner": generate_questions_by_level("beginner"),
-        "intermediate": generate_questions_by_level("intermediate"),
-        "advanced": generate_questions_by_level("advanced")
-    }
-
-
-def evaluate_answers(user_answers, questions):
-    scores = {
-        "beginner": 0,
-        "intermediate": 0,
-        "advanced": 0
-    }
-
-    for level in questions:
-        for i, q in enumerate(questions[level]):
-            if user_answers[level][i] == q["correct_answer"]:
-                scores[level] += 1
-
-    if scores["advanced"] >= 3:
-        final_level = "Advanced"
-    elif scores["intermediate"] >= 3:
-        final_level = "Intermediate"
-    else:
-        final_level = "Beginner"
+    for line in lines:
+        if ":" in line:
+            key, value = line.split(":", 1)
+            data[key.strip()] = value.strip()
 
     return {
-        "scores": scores,
-        "final_level": final_level
+        "question": data.get("Question"),
+        "options": {
+            "A": data.get("Option A"),
+            "B": data.get("Option B"),
+            "C": data.get("Option C"),
+            "D": data.get("Option D"),
+        },
+        "answer": data.get("Correct Answer")
     }
+
+
+def check_answer(user_answer: str, correct_answer: str) -> bool:
+    return user_answer.upper() == correct_answer.upper()

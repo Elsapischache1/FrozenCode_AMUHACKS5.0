@@ -1,63 +1,51 @@
-# quiz_logic.py
-# Member 2: Question generation + evaluation logic
+import os
+import json
+from openai import OpenAI
+
+# Initialize OpenAI client (API key must be in env variable)
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+
+def generate_questions_by_level(level: str):
+    prompt = f"""
+Generate EXACTLY 5 multiple-choice questions for Python at {level.upper()} level.
+
+Rules:
+- Each question must have 4 options
+- Only ONE correct answer
+- correct_answer must be an index (0-3)
+- Return ONLY valid JSON
+- No explanation, no markdown
+
+Format:
+[
+  {{
+    "question": "",
+    "options": ["", "", "", ""],
+    "correct_answer": 0,
+    "level": "{level}"
+  }}
+]
+"""
+
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.7
+    )
+
+    return json.loads(response.choices[0].message.content)
+
 
 def generate_questions():
-    """
-    Returns questions grouped by difficulty.
-    This is the structure the backend will consume.
-    """
-
-    questions = {
-        "beginner": [
-            {
-                "question": "What does len() do in Python?",
-                "options": [
-                    "Counts number of items",
-                    "Adds items",
-                    "Deletes items",
-                    "Sorts items"
-                ],
-                "correct_answer": 0,
-                "level": "beginner"
-            }
-        ],
-        "intermediate": [
-            {
-                "question": "What is the output of: print(type([]))?",
-                "options": [
-                    "<class 'list'>",
-                    "<class 'dict'>",
-                    "<class 'tuple'>",
-                    "<class 'set'>"
-                ],
-                "correct_answer": 0,
-                "level": "intermediate"
-            }
-        ],
-        "advanced": [
-            {
-                "question": "Which of the following improves Python code performance?",
-                "options": [
-                    "Using global variables",
-                    "Using list comprehensions",
-                    "Using more loops",
-                    "Using recursion everywhere"
-                ],
-                "correct_answer": 1,
-                "level": "advanced"
-            }
-        ]
+    return {
+        "beginner": generate_questions_by_level("beginner"),
+        "intermediate": generate_questions_by_level("intermediate"),
+        "advanced": generate_questions_by_level("advanced")
     }
-
-    return questions
 
 
 def evaluate_answers(user_answers, questions):
-    """
-    user_answers: dict with keys beginner/intermediate/advanced
-    questions: output from generate_questions()
-    """
-
     scores = {
         "beginner": 0,
         "intermediate": 0,
@@ -69,13 +57,10 @@ def evaluate_answers(user_answers, questions):
             if user_answers[level][i] == q["correct_answer"]:
                 scores[level] += 1
 
-    # Simple rule-based final level
-    if scores["beginner"] >= 1 and scores["intermediate"] == 0:
-        final_level = "Beginner"
-    elif scores["intermediate"] >= 1 and scores["advanced"] == 0:
-        final_level = "Intermediate"
-    elif scores["advanced"] >= 1:
+    if scores["advanced"] >= 3:
         final_level = "Advanced"
+    elif scores["intermediate"] >= 3:
+        final_level = "Intermediate"
     else:
         final_level = "Beginner"
 

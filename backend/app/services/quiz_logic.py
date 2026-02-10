@@ -6,7 +6,7 @@ import os
 # Windows (PowerShell):
 # setx GEMINI_API_KEY "your_api_key_here"
 
-API_KEY = "AIzaSyBuHxd2n5ZSl5LIhxqIsV4CXP2adK3y1V0"
+API_KEY = "AIzaSyBuXr2IKLW-qQFfpkU2aYas__0U-36Fsts"
 
 genai.configure(api_key=API_KEY)
 

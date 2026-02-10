@@ -3,7 +3,7 @@
 
 from pathlib import Path
 
-BASE_PROMPT_PATH = Path(__file__).resolve().parent.parent / "prompts" / "luna_base.txt"
+BASE_PROMPT_PATH = Path(__file__).resolve().parent.parent.parent / "prompts" / "luna_base.txt"
 
 def load_base_prompt():
     with open(BASE_PROMPT_PATH, "r") as file:

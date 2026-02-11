@@ -29,7 +29,7 @@
   width: 510px;   /* bigger */
   height: 510px;
 
-  background: url("../assets/cat.png") no-repeat center;
+  background: url("../assets/cat_transparent.png") no-repeat center;
   background-size: contain;
 
   pointer-events: none;

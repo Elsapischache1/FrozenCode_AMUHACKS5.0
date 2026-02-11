@@ -1,47 +1,58 @@
 import "../styles/pathSelection.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const PathSelection = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const skill = location.state?.skill || "Python";
 
   const sendChoice = async (choice) => {
-    console.log("User choice:", choice);
-
-    // later → POST to backend
-    // await fetch("/path/select", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({ choice }),
-    // });
-
-    if (choice === "beginner") {
-      navigate("/result", {
-        state: {
-          level: "Beginner",
-          score: 0, // optional, but useful
-        },
-      });
-    }
-
     if (choice === "quiz") {
-      navigate("/quiz");
+      try {
+        console.log("Connecting to backend...");
+        
+        const response = await fetch("http://127.0.0.1:8000/quiz/start", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ skill: skill }),
+        });
+
+        if (response.ok) {
+          console.log("Success! Navigating to quiz...");
+          navigate("/quiz", { state: { skill } });
+        } else {
+          const errorText = await response.text();
+          alert(`Backend Error: ${errorText}`);
+        }
+      } catch (error) {
+        console.error("Connection failed:", error);
+        alert("Cannot connect to server at http://127.0.0.1:8000. \n\nMake sure your Python backend is running!");
+      }
+    } else {
+      // Manual Path (Beginner)
+      navigate("/result", { 
+        state: { 
+          level: "Beginner", 
+          score: 0,
+          manual: true,
+          skill: skill
+        } 
+      });
     }
   };
 
   return (
     <div className="path-container">
       <h1 className="path-title">Choose Your Path</h1>
-      <p className="path-subtitle">
-        Let us tailor the learning experience for you
-      </p>
+      <p className="path-subtitle">Current Skill: <strong>{skill}</strong></p>
 
       <div className="path-buttons">
         <button onClick={() => sendChoice("beginner")}>
-          I’m a Beginner
+          I'm a Beginner
         </button>
 
         <button onClick={() => sendChoice("quiz")}>
-          Take Self‑Assessment Quiz
+          Take Self-Assessment Quiz
         </button>
       </div>
     </div>

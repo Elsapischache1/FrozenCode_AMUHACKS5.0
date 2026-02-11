@@ -33,7 +33,8 @@ const SkillDevelopment = () => {
 
   const handleClick = (skill) => {
     if (skill.enabled && skill.name === "Python") {
-      navigate("/path"); // ✅ only Python goes to path selection
+      // Pass skill name to PathSelection
+      navigate("/path", { state: { skill: skill.name } });
     }
   };
 

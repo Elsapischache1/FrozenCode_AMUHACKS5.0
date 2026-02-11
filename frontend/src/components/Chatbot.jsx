@@ -41,7 +41,7 @@ const Chatbot = ({ skill, level }) => {
       <div className="chat-header">Luna AI</div>
       <div className="chat-messages">
         {messages.map((msg, i) => (
-          <div className={`chat-row ${msg.role}`}>
+          <div key={i} className={`chat-row ${msg.role}`}>
             {msg.role === "luna" && (
               <div className="avatar"></div>
             )}

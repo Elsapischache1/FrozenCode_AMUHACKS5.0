@@ -1,5 +1,5 @@
 import "../styles/landing.css";
-import introVideo from "../assets/intro.mp4";
+import catImage from "../assets/cat.png"; // replace with your image
 import { useNavigate } from "react-router-dom";
 
 const Landing = () => {
@@ -7,19 +7,20 @@ const Landing = () => {
 
   return (
     <div className="landing-container">
-      {/* Video */}
-      <video
-        className="intro-video"
-        src={introVideo}
-        autoPlay
-        loop
-        muted
+
+      {/* Big Background Title */}
+      <h1 className="hero-title">SYNAPSE</h1>
+
+      {/* Cat Image */}
+      <img
+        src={catImage}
+        alt="Synapse Cat"
+        className="hero-cat"
       />
 
-      {/* Text */}
+      {/* Text Content */}
       <div className="text-content fade-in">
-        <h1 className="title">Synapse</h1>
-        <p className="tagline">Bridge the gap.</p>
+        <p className="tagline">Bridge the Gap.</p>
 
         <button
           className="begin-btn"
@@ -28,6 +29,7 @@ const Landing = () => {
           Let’s Begin
         </button>
       </div>
+
     </div>
   );
 };

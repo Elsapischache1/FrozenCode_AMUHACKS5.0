@@ -1,28 +1,31 @@
-# luna.py
-# Member 4: Chatbot logic
-
+import google.generativeai as genai
 from pathlib import Path
+
+GEMINI_API_KEY = "AIzaSyA4sXgTPRErVYIvwCL6ADulhhJiNZPoa-Y"
+genai.configure(api_key=GEMINI_API_KEY)
 
 BASE_PROMPT_PATH = Path(__file__).resolve().parent.parent.parent / "prompts" / "luna_base.txt"
 
-def load_base_prompt():
-    with open(BASE_PROMPT_PATH, "r") as file:
-        return file.read()
+# load prompt from file (if you have one)
+with open( BASE_PROMPT_PATH,"r", encoding="utf-8") as f:
+    SYSTEM_PROMPT = f.read()
 
-def get_luna_response(user_message, skill, level):
-    base_prompt = load_base_prompt()
+model = genai.GenerativeModel(
+    model_name="gemini-3-flash-preview",
+    system_instruction=SYSTEM_PROMPT
+)
 
-    full_prompt = f"""
-{base_prompt}
+def get_luna_response(user_message: str, skill: str, level: str) -> str:
+    prompt = f"""
+    Skill: {skill}
+    User level: {level}
 
-User Skill: {skill}
-User Level: {level}
+    User question:
+    {user_message}
 
-User Question:
-{user_message}
-"""
+    Answer clearly and concisely, suitable for the given level.
+    """
 
-    # TEMP response (LLM will replace this later)
-    return {
-        "reply": f"Luna received your question about {skill} at {level} level."
-    }
+    response = model.generate_content(prompt)
+    return response.text.strip()
+

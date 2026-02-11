@@ -79,7 +79,15 @@ const Quiz = () => {
     }
   };
 
-  if (loading) return <div className="quiz-container"><h2>Loading {currentLevel} questions...</h2></div>;
+  if (loading) {
+    return (
+      <div className="quiz-container loading-screen">
+        <div className="spinner"></div>
+        <h2>Generating {currentLevel} question...</h2>
+      </div>
+    );
+  }
+
   if (!currentQuestion) return null;
 
   return (

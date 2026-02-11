@@ -3,7 +3,8 @@ import json
 import random
 
 # ================= CONFIG =================
-GEMINI_API_KEY = "AIzaSyDyjJL6SlxsuO7wxUiG_YZ2fCVO4cdbAhY"
+GEMINI_API_KEY = "AIzaSyDyjJL6SlxsuO7wxUiG_YZ2fCVO4cdbAhY4" \
+""
 MODEL_NAME = "gemini-3-flash-preview"
 
 USE_CACHE = False   # set True ONLY if quota is low

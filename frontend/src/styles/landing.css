@@ -1,0 +1,85 @@
+/* Screen border */
+
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap");
+
+
+
+
+.landing-container {
+  height: 100vh;
+  background: white;
+  align-items:center;
+  
+  position: relative;
+  font-family:"brealey",serif;
+
+}
+
+/* Fade in animation */
+.fade-in {
+  animation: fadeIn 1.5s ease-in;
+  
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Text */
+.text-content {
+  position: relative;
+  top: -30%;
+  left: 30%;
+}
+
+.title {
+  font-family: "Playfair Display", sans-serif;
+  font-size: 12rem;          /* 5x bigger */
+  color: #4f7942;
+  margin: 0;
+}
+
+.tagline {
+  font-family: "lara", serif;
+  font-size: 3rem;
+  color: black;
+  margin-top: 1px;
+  position: relative;
+  bottom: 0px;
+  left: 200px;
+}
+
+/* Button */
+.begin-btn {
+  font-family: "lara", serif;
+  padding: 14px 36px;
+  font-size: 1.6rem;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  background-color: #4f7942;
+  color: white;
+  transition: all 0.3s ease;
+  position: relative;
+  bottom: 0px;
+  left: 250px;
+}
+
+
+.begin-btn:hover {
+  background-color: #3e6136;
+  transform: scale(1.15);
+  
+
+}
+
+/* Video bottom-left */
+.intro-video {
+  position: relative;
+  bottom: -370px;
+  left: 150px;
+  width: 300px;   /* twice size */
+ border-radius: 12px;
+  opacity: 0.9;
+}

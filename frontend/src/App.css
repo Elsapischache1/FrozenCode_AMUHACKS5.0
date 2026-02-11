@@ -1,0 +1,77 @@
+/* Page setup */
+.container {
+  height: 100vh;
+  width: 100%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  font-family: "Brealey", serif;
+}
+
+/* Center content */
+.content {
+  text-align: center;
+}
+
+/* Title */
+.title {
+  font-size: 6rem; /* 3x bigger */
+  color: #4f7942;
+  margin-bottom: 0.5rem;
+}
+
+/* Tagline */
+.tagline {
+  font-size: 2rem;
+  color: #4f7942;
+  margin-bottom: 2rem;
+}
+
+/* Button */
+.begin-btn {
+  padding: 14px 36px;
+  font-size: 1.2rem;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  background-color: #4f7942;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.begin-btn:hover {
+  background-color: #3e6135;
+  transform: scale(1.05);
+}
+
+.begin-btn:active {
+  background-color: #2f4d29;
+}
+
+/* Video bottom right */
+.intro-video {
+  position: relative;
+  bottom: -200px;
+  right: 700px;
+  width: 280px;
+  border-radius: 12px;
+  opacity: 0.9;
+}
+
+/* Fade-in animation */
+.fade-in {
+  animation: fadeIn 1.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

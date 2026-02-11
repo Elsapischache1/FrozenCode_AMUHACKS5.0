@@ -1,0 +1,39 @@
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap");
+
+.path-container {
+ 
+  
+  text-align: center;
+  font-family: "Playfair Display", serif;
+}
+
+.path-title {
+  font-size: 3rem;
+  color: #4f7942;
+}
+
+.path-subtitle {
+  margin: 20px 0 50px;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.path-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+}
+
+.path-buttons button {
+  font-family: serif;
+  font-size: 1.2rem;
+  padding: 15px 40px;
+  border: 2px solid #4f7942;
+  background: white;
+  cursor: pointer;
+}
+
+.path-buttons button:hover {
+  background: #4f7942;
+  color: white;
+}

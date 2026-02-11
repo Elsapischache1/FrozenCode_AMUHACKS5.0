@@ -1,6 +1,8 @@
 import "../styles/result.css";
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+// 1. Import the Chatbot component
+import Chatbot from "../components/Chatbot";
 
 const Result = () => {
   const navigate = useNavigate();
@@ -8,6 +10,9 @@ const Result = () => {
 
   const [resultData, setResultData] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Get the skill from navigation state (defaults to Python if not found)
+  const skill = location.state?.skill || "Python";
 
   // Recommendations Data
   const recommendations = {
@@ -125,6 +130,9 @@ const Result = () => {
       </div>
 
       <button className="restart-btn" onClick={() => navigate("/")}>Back to Home</button>
+
+      {/* 2. Add the Chatbot component and pass required props */}
+      <Chatbot skill={skill} level={formattedLevel} />
     </div>
   );
 };

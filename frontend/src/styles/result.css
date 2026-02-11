@@ -22,7 +22,7 @@
   content: "";
   position: absolute;
   bottom: -50px;
-  left: 10px;
+  left: -100px;
 
   width: 550px;   /* bigger */
   height: 550px;

@@ -1,21 +1,25 @@
-from quiz_logic import generate_question, check_answer
+from quiz_logic import QuizEngine
 
-def run_test():
-    quiz = generate_question(topic="Python", difficulty="easy")
+engine = QuizEngine(skill="Python")
 
-    print("\nQUESTION:")
-    print(quiz["question"])
+for level in ["beginner", "intermediate", "advance"]:
+    print(f"\n===== {level.upper()} LEVEL =====")
+    engine.switch_level(level)
 
-    print("\nOPTIONS:")
-    for key, value in quiz["options"].items():
-        print(f"{key}. {value}")
+    while True:
+        q = engine.get_next_question()
+        if q is None:
+            break
 
-    user_ans = input("\nYour answer (A/B/C/D): ").strip()
+        print("\nQ:", q["question"])
+        for i, opt in enumerate(q["options"], start=1):
+            print(f"{i}. {opt}")
 
-    if check_answer(user_ans, quiz["answer"]):
-        print("✅ Correct!")
-    else:
-        print(f"❌ Wrong. Correct answer is {quiz['answer']}")
+        # dummy input for testing
+        user_answer = int(input("Your answer (1-4): "))
+        engine.submit_answer(user_answer)
 
-if __name__ == "__main__":
-    run_test()
+print("\nFINAL SCORES:", engine.scores)
+print("FINAL LEVEL:", engine.final_level())
+
+

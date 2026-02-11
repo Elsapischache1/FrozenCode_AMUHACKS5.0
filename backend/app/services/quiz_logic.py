@@ -1,54 +1,109 @@
 import google.generativeai as genai
-import os
+import json
+import random
 
-# ---------- CONFIG ----------
-# Put your Gemini API key in an environment variable
-# Windows (PowerShell):
-# setx GEMINI_API_KEY "your_api_key_here"
+# ================= CONFIG =================
+GEMINI_API_KEY = "AIzaSyDyjJL6SlxsuO7wxUiG_YZ2fCVO4cdbAhY"
+MODEL_NAME = "gemini-3-flash-preview"
 
-API_KEY = "AIzaSyBuXr2IKLW-qQFfpkU2aYas__0U-36Fsts"
+USE_CACHE = False   # set True ONLY if quota is low
+QUESTION_CACHE = {}
+# ==========================================
 
-genai.configure(api_key=API_KEY)
+genai.configure(api_key=GEMINI_API_KEY)
 
-model = genai.GenerativeModel("gemini-3-flash-preview")
+model = genai.GenerativeModel(
+    MODEL_NAME,
+    generation_config={
+        "temperature": 0.9
+    }
+)
 
 
-# ---------- QUIZ LOGIC ----------
-def generate_question(topic: str, difficulty: str = "easy") -> dict:
+def generate_questions_for_level(skill: str, level: str, count: int = 5):
+    seed = random.randint(1, 1_000_000)
+    cache_key = f"{skill}_{level}_{seed}"
+
+    if USE_CACHE and cache_key in QUESTION_CACHE:
+        return QUESTION_CACHE[cache_key]
+
     prompt = f"""
-    Create ONE {difficulty} level quiz question on the topic "{topic}".
-    Return strictly in this format:
+    Random seed: {seed}
 
-    Question: ...
-    Option A: ...
-    Option B: ...
-    Option C: ...
-    Option D: ...
-    Correct Answer: A/B/C/D
+    Generate {count} {level} level multiple choice questions on "{skill}".
+
+    Rules:
+    - Return ONLY valid JSON
+    - Exactly 4 options per question
+    - answer must be a NUMBER from 1 to 4
+    - Do NOT include explanations or markdown
+
+    Format:
+    [
+      {{
+        "question": "...",
+        "options": ["...", "...", "...", "..."],
+        "answer": 1
+      }}
+    ]
     """
 
     response = model.generate_content(prompt)
-    text = response.text.strip()
+    raw = response.text.strip()
 
-    lines = text.split("\n")
-    data = {}
+    try:
+        questions = json.loads(raw)
+    except json.JSONDecodeError:
+        # retry once with stricter instruction
+        retry = model.generate_content(prompt + "\nREMEMBER: JSON ONLY.")
+        questions = json.loads(retry.text.strip())
 
-    for line in lines:
-        if ":" in line:
-            key, value = line.split(":", 1)
-            data[key.strip()] = value.strip()
+    if USE_CACHE:
+        QUESTION_CACHE[cache_key] = questions
 
-    return {
-        "question": data.get("Question"),
-        "options": {
-            "A": data.get("Option A"),
-            "B": data.get("Option B"),
-            "C": data.get("Option C"),
-            "D": data.get("Option D"),
-        },
-        "answer": data.get("Correct Answer")
-    }
+    return questions
 
 
-def check_answer(user_answer: str, correct_answer: str) -> bool:
-    return user_answer.upper() == correct_answer.upper()
+class QuizEngine:
+    def __init__(self, skill="Python"):
+        self.questions = {
+            "beginner": generate_questions_for_level(skill, "beginner"),
+            "intermediate": generate_questions_for_level(skill, "intermediate"),
+            "advance": generate_questions_for_level(skill, "advance"),
+        }
+
+        self.scores = {
+            "beginner": 0,
+            "intermediate": 0,
+            "advance": 0,
+        }
+
+        self.current_level = "beginner"
+        self.current_index = 0
+
+    def switch_level(self, level: str):
+        self.current_level = level
+        self.current_index = 0
+
+    def get_next_question(self):
+        qs = self.questions[self.current_level]
+        if self.current_index >= len(qs):
+            return None
+        return qs[self.current_index]
+
+    def submit_answer(self, selected_option: int):
+        """
+        selected_option must be 1–4
+        """
+        q = self.questions[self.current_level][self.current_index]
+
+        if selected_option == q["answer"]:
+            self.scores[self.current_level] += 1
+
+        self.current_index += 1
+
+    def final_level(self):
+        # lowest score decides level
+        return min(self.scores, key=self.scores.get)
+
+

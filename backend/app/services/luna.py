@@ -1,7 +1,8 @@
 import google.generativeai as genai
 from pathlib import Path
+import os
 
-GEMINI_API_KEY = "AIzaSyCIplZAJ40bEyeY6yk4O26ljqjXmP-fsGA"
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "YOUR_API_KEY_HERE")
 genai.configure(api_key=GEMINI_API_KEY)
 
 BASE_PROMPT_PATH = Path(__file__).resolve().parent.parent.parent / "prompts" / "luna_base.txt"

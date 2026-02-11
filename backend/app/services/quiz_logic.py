@@ -3,13 +3,11 @@ import json
 import random
 
 # ================= CONFIG =================
-GEMINI_API_KEY = "AIzaSyDyjJL6SlxsuO7wxUiG_YZ2fCVO4cdbAhY4" \
-""
+GEMINI_API_KEY = "AIzaSyDyjJL6SlxsuO7wxUiG_YZ2fCVO4cdbAhY4" 
 MODEL_NAME = "gemini-3-flash-preview"
 
-USE_CACHE = False   # set True ONLY if quota is low
+USE_CACHE = False  
 QUESTION_CACHE = {}
-# ==========================================
 
 genai.configure(api_key=GEMINI_API_KEY)
 
@@ -19,7 +17,6 @@ model = genai.GenerativeModel(
         "temperature": 0.9
     }
 )
-
 
 def generate_questions_for_level(skill: str, level: str, count: int = 5):
     seed = random.randint(1, 1_000_000)
@@ -70,21 +67,22 @@ class QuizEngine:
         self.questions = {
             "beginner": generate_questions_for_level(skill, "beginner"),
             "intermediate": generate_questions_for_level(skill, "intermediate"),
-            "advance": generate_questions_for_level(skill, "advance"),
+            "advanced": generate_questions_for_level(skill, "advanced"),
         }
 
         self.scores = {
             "beginner": 0,
             "intermediate": 0,
-            "advance": 0,
+            "advanced": 0,
         }
 
         self.current_level = "beginner"
         self.current_index = 0
 
     def switch_level(self, level: str):
-        self.current_level = level
-        self.current_index = 0
+        if self.current_level != level:
+            self.current_level = level
+            self.current_index = 0
 
     def get_next_question(self):
         qs = self.questions[self.current_level]
@@ -104,7 +102,6 @@ class QuizEngine:
         self.current_index += 1
 
     def final_level(self):
-        # lowest score decides level
         return min(self.scores, key=self.scores.get)
 
 

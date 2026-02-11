@@ -1,102 +1,107 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "../styles/quiz.css";
-
-const quizData = [
-  // BEGINNER (5)
-  { q: "What is Python?", options: ["Snake", "Programming Language", "Car", "OS"], answer: 1 },
-  { q: "Which keyword is used to define a function?", options: ["func", "define", "def", "function"], answer: 2 },
-  { q: "What is a variable?", options: ["Value", "Container", "Loop", "Class"], answer: 1 },
-  { q: "Which symbol is used for comments?", options: ["//", "#", "/*", "<!--"], answer: 1 },
-  { q: "Which data type stores text?", options: ["int", "float", "string", "bool"], answer: 2 },
-
-  // INTERMEDIATE (5)
-  { q: "Which loop runs at least once?", options: ["for", "while", "do-while", "foreach"], answer: 2 },
-  { q: "What does OOP stand for?", options: ["Object Oriented Programming", "Open Object Process", "Order Of Program", "None"], answer: 0 },
-  { q: "Which keyword creates an object in Java?", options: ["make", "new", "create", "object"], answer: 1 },
-  { q: "Time complexity of binary search?", options: ["O(n)", "O(log n)", "O(n²)", "O(1)"], answer: 1 },
-  { q: "Stack follows which principle?", options: ["FIFO", "LIFO", "Random", "Priority"], answer: 1 },
-
-  // ADVANCED (5)
-  { q: "Which data structure uses recursion heavily?", options: ["Array", "Tree", "Queue", "Stack"], answer: 1 },
-  { q: "What is polymorphism?", options: ["One form", "Many forms", "Inheritance", "Encapsulation"], answer: 1 },
-  { q: "Which algorithm uses divide and conquer?", options: ["Bubble Sort", "Merge Sort", "Linear Search", "Insertion Sort"], answer: 1 },
-  { q: "Which is immutable in Python?", options: ["List", "Set", "Dictionary", "Tuple"], answer: 3 },
-  { q: "What does API stand for?", options: ["Application Programming Interface", "Advanced Program Input", "Applied Process Interface", "None"], answer: 0 },
-];
 
 const Quiz = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
-  const skill = state?.skill || "Skill";
+  const skill = state?.skill || "Python";
 
-  const [answers, setAnswers] = useState({});
+  // We will loop through these levels
+  const LEVEL_ORDER = ["beginner", "intermediate", "advanced"];
 
-  const selectOption = (qIndex, optIndex) => {
-    setAnswers({ ...answers, [qIndex]: optIndex });
+  const [currentQuestion, setCurrentQuestion] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
+  // Track which stage of the quiz we are in
+  const [levelIndex, setLevelIndex] = useState(0); 
+  const currentLevel = LEVEL_ORDER[levelIndex];
+
+  // Fetch Question Function
+  const fetchQuestion = async () => {
+    setLoading(true);
+    try {
+      // 1. Ask backend for question for current level
+      const res = await fetch(`http://127.0.0.1:8000/quiz/question/${currentLevel}`);
+      const data = await res.json();
+
+      if (data.error) {
+        alert("Session expired. Restarting.");
+        navigate("/path");
+        return;
+      }
+
+      // 2. If this level is DONE
+      if (data.done) {
+        // Check if there is a next level
+        if (levelIndex < LEVEL_ORDER.length - 1) {
+          console.log(`Level ${currentLevel} finished. Moving to ${LEVEL_ORDER[levelIndex + 1]}`);
+          setLevelIndex(prev => prev + 1); // Move to next level
+          // The useEffect will trigger the fetch for the new level
+        } else {
+          // No more levels? Go to Result
+          navigate("/result");
+        }
+      } else {
+        // 3. If valid question, show it
+        setCurrentQuestion(data);
+      }
+    } catch (err) {
+      console.error("Failed to load question", err);
+      alert("Error connecting to backend. Please check if the server is running.");
+    }
+    setLoading(false);
   };
 
-  const allAnswered = Object.keys(answers).length === quizData.length;
+  // Trigger fetch whenever levelIndex changes (or on mount)
+  useEffect(() => {
+    fetchQuestion();
+    // eslint-disable-next-line
+  }, [levelIndex]);
 
-  const handleSubmit = () => {
-    if (!allAnswered) return;
+  const handleOptionSelect = async (index) => {
+    const answerPayload = {
+      level: currentLevel,
+      selected_option: index + 1 
+    };
 
-    let score = 0;
-    quizData.forEach((q, i) => {
-      if (answers[i] === q.answer) score++;
-    });
+    try {
+      await fetch("http://127.0.0.1:8000/quiz/answer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(answerPayload),
+      });
 
-    let level = "Beginner";
-    if (score >= 11) level = "Advanced";
-    else if (score >= 6) level = "Intermediate";
-
-    navigate("/result", {
-      state: {
-        score,
-        level,
-      },
-    });
+      // Fetch next question immediately
+      fetchQuestion();
+    } catch (err) {
+      console.error("Error submitting answer", err);
+    }
   };
+
+  if (loading) return <div className="quiz-container"><h2>Loading {currentLevel} questions...</h2></div>;
+  if (!currentQuestion) return null;
 
   return (
     <div className="quiz-container">
-      <h1 className="quiz-title">{skill} Self‑Assessment</h1>
+      <h1 className="quiz-title">{skill} Assessment</h1>
+      <div className="level-badge">Level: {currentLevel.charAt(0).toUpperCase() + currentLevel.slice(1)}</div>
+      
+      <div className="question-card">
+        <h3 className="question-text">{currentQuestion.question}</h3>
 
-      {quizData.map((item, qIndex) => (
-        <div key={qIndex} className="question-card">
-          <h3 className="question-text">
-            Q{qIndex + 1}. {item.q}
-          </h3>
-
-          <div className="options-grid">
-            {item.options.map((opt, optIndex) => (
-              <label key={optIndex} className="option">
-                <input
-                  type="radio"
-                  name={`question-${qIndex}`}
-                  checked={answers[qIndex] === optIndex}
-                  onChange={() => selectOption(qIndex, optIndex)}
-                />
-                <span>{opt}</span>
-              </label>
-            ))}
-          </div>
+        <div className="options-grid">
+          {currentQuestion.options.map((opt, idx) => (
+            <button
+              key={idx}
+              className="option-btn"
+              onClick={() => handleOptionSelect(idx)}
+            >
+              {opt}
+            </button>
+          ))}
         </div>
-      ))}
-
-      <button
-        className={`submit-btn ${!allAnswered ? "disabled" : ""}`}
-        onClick={handleSubmit}
-        disabled={!allAnswered}
-      >
-        Submit Quiz
-      </button>
-
-      {!allAnswered && (
-        <p className="warning-text">
-          Please answer all questions before submitting.
-        </p>
-      )}
+      </div>
     </div>
   );
 };

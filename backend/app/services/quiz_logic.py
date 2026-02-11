@@ -121,32 +121,15 @@ class QuizEngine:
             self.current_index += 1
 
     def final_level(self):
-        """
-        Determine level based on performance with smart logic:
-        - If you ace beginner AND intermediate, you're ready for advanced
-        - If you score well on intermediate (4+), you're intermediate+
-        - Progressive assessment based on cumulative performance
-        """
+        
         beginner_score = self.scores.get("beginner", 0)
         intermediate_score = self.scores.get("intermediate", 0)
         advanced_score = self.scores.get("advanced", 0)
+
+        if beginner_score < 4:
+            return "beginner"
         
-        # If you aced or nearly aced both beginner AND intermediate (4-5 on each),
-        # you should get advanced recommendations regardless of advanced score
-        if beginner_score >= 4 and intermediate_score >= 4:
-            return "advanced"
-        
-        # If you did well on intermediate (4+), you're at intermediate level
-        if intermediate_score >= 4:
+        if intermediate_score < 3:
             return "intermediate"
         
-        # If you passed intermediate with decent score (3), check advanced
-        if intermediate_score >= 3 and advanced_score >= 2:
-            return "advanced"
-        
-        # Standard check: did well on intermediate
-        if intermediate_score >= 3:
-            return "intermediate"
-        
-        # Default to beginner
-        return "beginner"
+        return "advanced"

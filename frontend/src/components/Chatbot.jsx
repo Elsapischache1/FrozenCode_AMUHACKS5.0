@@ -38,14 +38,30 @@ const Chatbot = ({ skill, level }) => {
 
   return (
     <div className="chatbot-window">
-      <div className="chat-header">Luna AI Tutor ({level})</div>
+      <div className="chat-header">Luna AI</div>
       <div className="chat-messages">
         {messages.map((msg, i) => (
-          <div key={i} className={`message ${msg.role}`}>
-            {msg.text}
+          <div className={`chat-row ${msg.role}`}>
+            {msg.role === "luna" && (
+              <div className="avatar"></div>
+            )}
+            <div className="message">
+              {msg.text}
+            </div>
           </div>
+
         ))}
-        {loading && <div className="message luna">...</div>}
+        {loading && (
+          <div className="chat-row luna">
+            <div className="avatar"></div>
+            <div className="message typing">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+        )}
+
       </div>
       <div className="chat-input">
         <input 

@@ -17,6 +17,91 @@
   font-size: 1.2rem;
   color: #333;
 }
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap");
+
+.path-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  background: linear-gradient(
+    135deg,
+    #496181 0%,
+    
+    #bfdbfe 100%
+  );
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+}
+.path-container h1::after {
+  content: "";
+  display: block;
+  width: 700px;
+  height: 4px;
+  background:#39393a;
+  margin: 15px auto 0;
+  border-radius: 2px;
+}
+
+/* ===== TITLE ===== */
+.path-title {
+  font-family: "Playfair Display", serif;
+  font-size: 4rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #072346;
+}
+
+/* ===== SUBTITLE ===== */
+.path-subtitle {
+  margin-bottom: 60px;
+  font-size: 1.2rem;
+  color: #d3d590;
+}
+
+/* ===== BUTTON WRAPPER ===== */
+.path-buttons {
+  display: flex;
+  gap: 80px;
+}
+
+/* ===== CARD STYLE BUTTONS ===== */
+.path-buttons button {
+  width: 260px;
+  height: 260px;
+
+  border-radius: 28px;
+  border: 2px solid transparent;
+
+  background: white;   /* default dark blue */
+  color: #15345c;
+
+  transition: 
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border 0.3s ease,
+    background 0.3s ease,
+    color 0.3s ease;
+}
+
+
+/* ===== HOVER EFFECT ===== */
+.path-buttons button:hover {
+  transform: translateY(-6px);
+
+  background: #FAF0CA;
+  color: #1e293b;
+
+  border: 3px solid #fede60;
+
+  box-shadow:
+    0 0 25px rgba(244, 216, 103, 0.9),
+    0 0 60px rgba(252, 221, 100, 0.8),
+    0 0 120px rgba(255, 225, 105, 0.6);
+}
+
 
 .path-buttons {
   display: flex;
@@ -28,12 +113,17 @@
   font-family: serif;
   font-size: 1.2rem;
   padding: 15px 40px;
-  border: 2px solid #4f7942;
-  background: white;
+  border: 2px solid #092c56;
+  background: #DADEE1;
   cursor: pointer;
 }
+.path-buttons button img {
+  width:170px;
+  height: auto;
+}
+
 
 .path-buttons button:hover {
-  background: #4f7942;
-  color: white;
+  background: #DADEE1;
+  color: #15345c;
 }

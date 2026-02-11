@@ -44,15 +44,17 @@ const PathSelection = () => {
   return (
     <div className="path-container">
       <h1 className="path-title">Choose Your Path</h1>
-      <p className="path-subtitle">Current Skill: <strong>{skill}</strong></p>
+      <p className="path-subtitle">Selected Skill: <strong>{skill}</strong></p>
 
       <div className="path-buttons">
         <button onClick={() => sendChoice("beginner")}>
-          I'm a Beginner
+         <img src={require("../assets/luna-reading.png")} alt="Beginner" />
+         <span>I'm a Beginner</span>
         </button>
 
         <button onClick={() => sendChoice("quiz")}>
-          Take Self-Assessment Quiz
+         <img src={require("../assets/luna-thinking.png")} alt="Quiz" />
+         <span>Take Self‑Assessment Quiz</span>
         </button>
       </div>
     </div>

@@ -1,6 +1,6 @@
 /* Screen border */
 
-@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&display=swap');
 
 
 
@@ -33,12 +33,15 @@
   left: 30%;
 }
 
-.title {
-  font-family: "Playfair Display", sans-serif;
-  font-size: 12rem;          /* 5x bigger */
-  color: #4f7942;
-  margin: 0;
+.skill-title {
+  text-align: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 10rem;
+  font-weight: 600;
+  color: #1e3a8a;
+  margin-bottom: 40px;
 }
+
 
 .tagline {
   font-family: "lara", serif;

@@ -19,7 +19,7 @@ const Landing = () => {
       {/* Text */}
       <div className="text-content fade-in">
         <h1 className="title">Synapse</h1>
-        <p className="tagline">Bridge the ap.</p>
+        <p className="tagline">Bridge the gap.</p>
 
         <button
           className="begin-btn"

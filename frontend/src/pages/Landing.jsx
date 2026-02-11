@@ -1,5 +1,5 @@
 import "../styles/landing.css";
-import catImage from "../assets/cat.png"; // replace with your image
+import catImage from "../assets/cat_landing.png"; // replace with your image
 import { useNavigate } from "react-router-dom";
 
 const Landing = () => {
